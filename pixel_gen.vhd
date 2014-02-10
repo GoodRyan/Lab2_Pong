@@ -47,14 +47,14 @@ begin
 
 	process (row, column, blank)
 	begin	
-		--initial status
+--		initial status
 		r <= (others => '0');
 		g <= (others => '0');
 		b <= (others => '0');
 		
-		--Left side of A
+--		Left Side of A
 		if (row >= AF_Start_Row and row <= AF_Start_Row + Vertical_Bar_Size) then
-			if (column >= A_Start_Column and column <= A_Start_Column + Standard_Width) then
+			if (column >= AF_Start_Column and column <= AF_Start_Column + Standard_Width) then
 				r <= (others => '0');
 				g <= (others => '0');
 				b <= (others => '1');
@@ -63,7 +63,7 @@ begin
 		
 --		Top of A
 		if (row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) then
-			if (column >= A_Start_Column and column <= Horizontal_Bar_Size + A_Start_Column) then
+			if (column >= AF_Start_Column and column <= Horizontal_Bar_Size + AF_Start_Column) then
 				r <= (others => '0');
 				g <= (others => '0');
 				b <= (others => '1');
@@ -71,9 +71,19 @@ begin
 		end if;
 		
 --		Middle of A
-		if (row <= AF_Start_Row + Vertical_Bar_Size/2 and
-			row >= AF_Start_Row - Vertical_Bar_Size/2 - Standard_Width) then
-			if (column >= A_Start_Column and column <= Horizontal_Bar_Size + A_Start_Column) then
+		if (row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
+			row <= AF_Start_Row + Vertical_Bar_Size/2) then
+			if (column >= AF_Start_Column and column <= Horizontal_Bar_Size + AF_Start_Column) then
+				r <= (others => '0');
+				g <= (others => '0');
+				b <= (others => '1');
+			end if;
+		end if;
+		
+--		Right Side of A
+		if (row >= AF_Start_Row - Standard_Width and row <= AF_Start_Row + Vertical_Bar_Size) then
+			if (column >= AF_Start_Column + Horizontal_Bar_Size and
+			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width) then
 				r <= (others => '0');
 				g <= (others => '0');
 				b <= (others => '1');
