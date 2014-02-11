@@ -89,6 +89,37 @@ begin
 				b <= (others => '1');
 			end if;
 		end if;
+		
+--		Vertical bar of F
+	   if (row >= AF_Start_Row - Standard_Width and row <= AF_Start_Row + Vertical_Bar_Size) then
+			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
+			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*3) then
+				r <= (others => '0');
+				g <= (others => '0');
+				b <= (others => '1');
+			end if;
+		end if;
+		
+--		Top Bar of F
+		if (row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) then
+			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
+			column <= AF_Start_Column + Horizontal_Bar_Size*2 + Standard_Width*2) then
+				r <= (others => '0');
+				g <= (others => '0');
+				b <= (others => '1');
+			end if;
+		end if;
+
+--		Middle Bar of F
+		if (row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
+			row <= AF_Start_Row + Vertical_Bar_Size/2) then
+			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
+			column <= AF_Start_Column + Horizontal_Bar_Size*2 + Standard_Width*2) then
+				r <= (others => '0');
+				g <= (others => '0');
+				b <= (others => '1');
+			end if;
+		end if;
 
 	end process;
 
