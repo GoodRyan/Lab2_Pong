@@ -111,7 +111,7 @@ begin
 					paddle_y_next <= paddle_y_reg + paddle_increment;
 				end if;
 			when button_held =>
-				paddle_y_next <= paddle_y_reg;
+				
 		end case;
 	end process;
 	
