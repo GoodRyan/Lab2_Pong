@@ -29,17 +29,19 @@ use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+--my constants library
 library work;
-
-use work.af_constants.all;
+use work.PONG_CONSTANTS.all;
 
 entity pixel_gen is
-port ( 	  row : in unsigned(10 downto 0);
-           column : in unsigned(10 downto 0);
-           blank : in std_logic;
-           r : out std_logic_vector(7 downto 0);
-           g : out std_logic_vector(7 downto 0);
-           b : out std_logic_vector(7 downto 0));
+port ( 	 row      : in unsigned(10 downto 0);
+          column   : in unsigned(10 downto 0);
+          blank    : in std_logic;
+          ball_x   : in unsigned(10 downto 0);
+          ball_y   : in unsigned(10 downto 0);
+          paddle_y : in unsigned(10 downto 0);
+          r,g,b    : out std_logic_vector(7 downto 0)
+		);
 end pixel_gen;
 
 architecture pixel_arch of pixel_gen is

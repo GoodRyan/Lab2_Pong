@@ -10,7 +10,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
-package AF_CONSTANTS is
+package PONG_CONSTANTS is
 
 -- type <new_type> is
 --  record
@@ -27,6 +27,10 @@ package AF_CONSTANTS is
 	constant Vertical_Bar_Size			: natural := 125;
 	constant Horizontal_Bar_Size		: natural := 100;
 	constant Standard_Width				: natural := 20;
+	
+	constant paddle_increment			: natural := 5;
+	constant paddle_start				: natural := 200;
+	constant paddle_bits					: natural := 11;
 
 -- constant <constant_name>		: integer := <value;
 --
@@ -36,9 +40,9 @@ package AF_CONSTANTS is
 -- procedure <procedure_name> (<type_declaration> <constant_name>	: in <type_declaration>);
 --
 
-end AF_CONSTANTS;
+end PONG_CONSTANTS;
 
-package body AF_CONSTANTS is
+package body PONG_CONSTANTS is
 
 ---- Example 1
 --  function <function_name>  (signal <signal_name> : in <type_declaration>  ) return <type_declaration> is
@@ -66,4 +70,4 @@ package body AF_CONSTANTS is
 --    
 --  end <procedure_name>;
  
-end AF_CONSTANTS;
+end PONG_CONSTANTS;

@@ -32,21 +32,36 @@ end component;
 
 component pixel_gen
 	port (  
-		row : in unsigned(10 downto 0);
-      column : in unsigned(10 downto 0);
-      blank : in std_logic;
-      r : out std_logic_vector(7 downto 0);
-      g : out std_logic_vector(7 downto 0);
-      b : out std_logic_vector(7 downto 0));
+		row      : in unsigned(10 downto 0);
+      column   : in unsigned(10 downto 0);
+      blank    : in std_logic;
+      ball_x   : in unsigned(10 downto 0);
+      ball_y   : in unsigned(10 downto 0);
+      paddle_y : in unsigned(10 downto 0);
+      r,g,b    : out std_logic_vector(7 downto 0)
+	);
+end component;
+
+component pong_control
+	port (
+		clk         : in std_logic;
+      reset       : in std_logic;
+      up          : in std_logic;
+      down        : in std_logic;
+      v_completed : in std_logic;
+      ball_x      : out unsigned(10 downto 0);
+      ball_y      : out unsigned(10 downto 0);
+      paddle_y    : out unsigned(10 downto 0)
+	);
 end component;
 
 
-
     signal pixel_clk, serialize_clk, serialize_clk_n, blank_sig: std_logic;
-	 signal h_sync_sig, v_sync_sig: std_logic;
+	 signal h_sync_sig, v_sync_sig, v_completed_sig: std_logic;
 	 signal red, green, blue : std_logic_vector (7 downto 0);
 	 signal red_s, green_s, blue_s, clock_s : std_logic;
 	 signal row_sig, column_sig : unsigned(10 downto 0);
+	 signal ball_x_sig, ball_y_sig, paddle_y_sig : unsigned(10 downto 0);
 begin
 
     -- Clock divider - creates pixel clock from 100MHz clock
@@ -82,7 +97,7 @@ inst_vga_sync: vga_sync
 		reset	=> reset,
 		h_sync	=> h_sync_sig,
 		v_sync	=> v_sync_sig,
-		v_completed => open,
+		v_completed => v_completed_sig,
 		blank	=> blank_sig,
 		row	=> row_sig,
 		column	=> column_sig
@@ -93,9 +108,24 @@ inst_pixel_gen: pixel_gen
 			  row => row_sig,
            column => column_sig,
            blank => blank_sig,
+			  ball_x => ball_x_sig,
+			  ball_y => ball_y_sig,
+			  paddle_y => paddle_y_sig,
            r => red,
            g => green,
            b => blue
+);
+
+inst_pong_control: pong_control
+	port map(
+		clk         => pixel_clk,
+      reset       => reset,
+      up          => up,
+      down        => down,
+      v_completed => v_completed_sig,
+      ball_x      => ball_x_sig,
+      ball_y      => ball_y_sig,
+      paddle_y    => paddle_y_sig
 );
 
 
