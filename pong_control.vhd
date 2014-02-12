@@ -49,7 +49,7 @@ end pong_control;
 architecture pong_control_arch of pong_control is
 
 	type state_type is
-		(idle, button_pressed, button_held);
+		(initialize, idle, button_pressed, button_held);
 	signal paddle_y_reg, paddle_y_next : unsigned(10 downto 0);
 	signal state_reg, state_next: state_type;
  
@@ -59,17 +59,9 @@ begin
 	process(clk, reset)
 	begin
 		if (reset='1') then
-			state_reg <= idle;
+			state_reg <= initialize;
 		elsif (rising_edge(clk)) then
 			state_reg <= state_next;
-		end if;
-	end process;
-	
-	--initialize paddle
-	process(clk, reset)
-	begin
-		if (reset = '1') then
-			paddle_y_next <= to_unsigned(paddle_start, paddle_bits);
 		end if;
 	end process;
 	
@@ -87,6 +79,8 @@ begin
 		state_next <= state_reg;
 		
 		case state_reg is
+			when initialize =>
+				state_next <= idle;
 			when idle =>
 				if (up = '1' or down = '1') then
 					state_next <= button_pressed;
@@ -106,12 +100,14 @@ begin
 	process(state_next)
 	begin
 		case state_next is
+			when initialize =>
+				paddle_y_next <= paddle_start;
 			when idle =>
-				paddle_y_next <= paddle_y_reg;
+			
 			when button_pressed =>
-				if (up = '1') then
+				if (up = '1' and paddle_y_reg > 2) then
 					paddle_y_next <= paddle_y_reg - paddle_increment;
-				elsif (down = '1') then
+				elsif (down = '1' and paddle_y_reg < 478) then
 					paddle_y_next <= paddle_y_reg + paddle_increment;
 				end if;
 			when button_held =>
