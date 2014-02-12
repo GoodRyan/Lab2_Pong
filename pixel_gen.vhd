@@ -122,7 +122,15 @@ begin
 				b <= (others => '1');
 			end if;
 		end if;
-
+		
+--		Paddle
+		if (row <= paddle_y and row >= paddle_y - paddle_size) then
+			if (column >= standard_width and column <= standard_width + 1/2*standard_width) then
+				r <= (others => '1');
+				g <= (others => '1');
+				b <= (others => '0');
+			end if;
+		end if;
 	end process;
 
 end pixel_arch;
