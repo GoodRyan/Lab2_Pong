@@ -48,75 +48,50 @@ end pong_control;
 
 architecture pong_control_arch of pong_control is
 
-	type state_type is
-		(initialize, idle, button_pressed, button_held);
-	signal paddle_y_reg, paddle_y_next : unsigned(10 downto 0);
-	signal state_reg, state_next: state_type;
- 
+component button_pressed
+	port(
+		clk         : in std_logic;
+      reset       : in std_logic;
+		button_in	: in std_logic;
+		button_out	: out std_logic
+		);
+end component;
+
+signal up_signal, down_signal : std_logic;
+signal paddle_y_next : unsigned(10 downto 0);
 begin
 
-	--state register
-	process(clk, reset)
-	begin
-		if (reset='1') then
-			state_reg <= initialize;
-		elsif (rising_edge(clk)) then
-			state_reg <= state_next;
-		end if;
-	end process;
+inst_up_pressed: button_pressed
+	port map(
+		clk	=> clk,
+		reset	=> reset,
+		button_in => up,
+		button_out => up_signal
+	);
+
+inst_down_pressed: button_pressed
+	port map(
+		clk => clk,
+		reset => reset,
+		button_in => down,
+		button_out => down_signal
+	);
 	
-	--output buffer
-	process(clk, paddle_y_next)
-	begin
-		if (rising_edge(clk)) then
-			paddle_y_reg <= paddle_y_next;
-		end if;
-	end process;
+--paddle movement
+paddle_y <= paddle_y_next;
+process (up_signal, down_signal, reset)
+begin
+
+	if (reset = '1') then
+		paddle_y_next <= to_unsigned(paddle_start, paddle_bit_size);
+	elsif (up_signal = '1') then
+		paddle_y_next <= paddle_y_next - 1;
+	elsif (down_signal = '1') then
+		paddle_y_next <= paddle_y_next + 1;
+	end if;
+
+end process;
 	
-	--next-state logic
-	process(state_next, up, down)
-	begin
-		state_next <= state_reg;
-		
-		case state_reg is
-			when initialize =>
-				state_next <= idle;
-			when idle =>
-				if (up = '1' or down = '1') then
-					state_next <= button_pressed;
-				end if;
-			when button_pressed =>
-				if (up = '1' or down = '1') then
-					state_next <= button_held;
-				end if;
-			when button_held =>
-				if (up = '0' and down = '0') then
-					state_next <= idle;
-				end if;
-		end case;		
-	end process;
-	
-	--output logic
-	process(state_next)
-	begin
-		case state_next is
-			when initialize =>
-				paddle_y_next <= paddle_start;
-			when idle =>
-			
-			when button_pressed =>
-				if (up = '1' and paddle_y_reg > 2) then
-					paddle_y_next <= paddle_y_reg - paddle_increment;
-				elsif (down = '1' and paddle_y_reg < 478) then
-					paddle_y_next <= paddle_y_reg + paddle_increment;
-				end if;
-			when button_held =>
-				
-		end case;
-	end process;
-	
-	--output
-	paddle_y <= paddle_y_reg;
 	
 end pong_control_arch;
 
