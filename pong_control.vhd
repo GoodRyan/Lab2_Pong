@@ -58,7 +58,7 @@ component button_pressed
 		);
 end component;
 
-type state_type is (movement, right_wall, left_wall);
+type state_type is (movement, right_wall, left_wall, bottom_wall, top_wall, paddle_bounce);
 signal state_reg, state_next : state_type;
 signal up_signal, down_signal : std_logic;
 signal paddle_y_next, paddle_y_reg : unsigned(10 downto 0);
@@ -114,6 +114,7 @@ process(clk, reset)
 			ball_x_reg <= to_unsigned(ball_x_init, 11);
 			ball_y_reg <= to_unsigned(ball_y_init, 11);
 			x_dir_reg <= '0';
+			y_dir_reg <= '0';
 		elsif (rising_edge(clk)) then
 			ball_x_reg <= ball_x_next;
 			ball_y_reg <= ball_y_next;
@@ -135,10 +136,26 @@ process(clk, reset)
 				elsif (ball_x_reg <= 1) then
 					state_next <= left_wall;
 				end if;
+				if	(ball_y_reg >= vertical_size-1) then
+					state_next <= bottom_wall;
+				elsif (ball_y_reg <= 1) then
+					state_next <= top_wall;
+				end if;
+				if (ball_x_reg >= standard_width and ball_x_reg <= standard_width + (1/2)*standard_width+1) then
+					if (ball_y_reg >= paddle_y_reg and ball_y_reg <= paddle_y_reg + paddle_size) then
+						state_next <= paddle_bounce;
+					end if;
+				end if;
 			when right_wall =>	
 				state_next <= movement;
 			when left_wall =>
-				state_next <= movement;			
+				state_next <= movement;
+			when bottom_wall =>
+				state_next <= movement;
+			when top_wall =>
+				state_next <= movement;
+			when paddle_bounce =>
+				state_next <= movement;
 		end case;
 		
 	end if;
@@ -160,10 +177,21 @@ process(clk, reset)
 				elsif (x_dir_reg = '1') then
 					ball_x_next <= ball_x_reg - to_unsigned(1, 11);
 				end if;
+				if (y_dir_reg = '0') then
+					ball_y_next <= ball_y_reg + 1;
+				elsif (y_dir_reg ='1') then
+					ball_y_next <= ball_y_reg - to_unsigned(1, 11);
+				end if;
 			when right_wall =>
 				x_dir <= '1';
 			when left_wall =>
-				x_dir <= '0';			
+				x_dir <= '0';
+			when bottom_wall =>
+				y_dir <= '1';
+			when top_wall =>
+				y_dir <= '0';
+			when paddle_bounce =>
+				x_dir <= '0';
 		end case;
 	end if;
 	
