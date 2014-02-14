@@ -58,7 +58,7 @@ component button_pressed
 end component;
 
 signal up_signal, down_signal : std_logic;
-signal paddle_y_next : unsigned(10 downto 0);
+signal paddle_y_next, paddle_y_reg : unsigned(10 downto 0);
 begin
 
 inst_up_pressed: button_pressed
@@ -76,22 +76,33 @@ inst_down_pressed: button_pressed
 		button_in => down,
 		button_out => down_signal
 	);
+
+
+--paddle flip flop
+process(clk, reset)
+begin
+		if (reset = '1') then
+			paddle_y_reg <= (others => '0');
+		elsif rising_edge(clk) then
+			paddle_y_reg <= paddle_y_next;
+		end if;
+		
+end process;
 	
 --paddle movement
-paddle_y <= paddle_y_next;
-process (up_signal, down_signal, reset)
+process (up_signal, down_signal, paddle_y_next, paddle_y_reg)
 begin
-
-	if (reset = '1') then
-		paddle_y_next <= to_unsigned(paddle_start, paddle_bit_size);
-	elsif (up_signal = '1') then
-		paddle_y_next <= paddle_y_next - 1;
-	elsif (down_signal = '1') then
-		paddle_y_next <= paddle_y_next + 1;
+	paddle_y_next <= paddle_y_reg;
+	
+	if (up_signal = '1' and  down_signal = '0' and paddle_y_next > 1) then
+		paddle_y_next <= paddle_y_reg - to_unsigned(1, 11);	
+	elsif (up_signal = '0' and down_signal = '1' and paddle_y_next < 479) then
+		paddle_y_next <= paddle_y_reg + 1;
 	end if;
 
 end process;
 	
+paddle_y <= paddle_y_reg;	
 	
 end pong_control_arch;
 

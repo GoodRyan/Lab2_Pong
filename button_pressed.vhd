@@ -22,7 +22,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -40,10 +40,24 @@ end button_pressed;
 
 architecture Behavioral of button_pressed is
 	type state_type is
-		(idle, button_pressed, button_held);
+		(idle, debounce, output);
 	signal state_reg, state_next: state_type;
 	signal button_out_reg, button_out_next: std_logic;
+	signal count, count_next : unsigned(19 downto 0);
+	signal counter : natural;
 begin
+
+--counter register
+count_next <= count + 1 when state_reg = debounce else
+to_unsigned(0, 20);
+	process(clk, reset)
+	begin
+			if (reset = '1') then
+				count <= to_unsigned(0,20);
+			elsif rising_edge(clk) then
+				count <= count_next;
+			end if;
+	end process;
 
 
 --state register
@@ -65,27 +79,24 @@ begin
 	end process;
 
 --next-state logic
-process(button_in)
+process(button_in, count)
 begin
 	state_next <= state_reg;
 	
 	case state_reg is
 		when idle =>
 			if (button_in = '1') then
-				state_next <= button_pressed;
+				state_next <= debounce;
 			end if;
-			
-		when button_pressed =>
-			if (button_in = '1') then
-				state_next <= button_held;
-			elsif (button_in = '0') then
-				state_next <= idle;
+		
+		when debounce =>
+			if (count > 50000 and button_in = '0') then
+				state_next <= output;
 			end if;
-			
-		when button_held =>
-			if (button_in = '0') then
-				state_next <= idle;
-			end if;
+		
+		when output =>
+			state_next <= idle;
+				
 	end case;
 end process;
 
@@ -95,10 +106,10 @@ begin
 	case state_reg is
 		when idle =>
 			button_out_next <= '0';
-		when button_pressed =>
-			button_out_next <= '1';
-		when button_held =>
+		when debounce =>
 			button_out_next <= '0';
+		when output =>
+			button_out_next <= '1';
 	end case;
 end process;
 
