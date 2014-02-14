@@ -59,7 +59,8 @@ component button_pressed
 		);
 end component;
 
-type state_type is (movement, right_wall, left_wall, bottom_wall, top_wall, paddle_bounce);
+type state_type is (movement, right_wall, left_wall, bottom_wall, top_wall, 
+							paddle_bounce_upper, paddle_bounce_lower);
 signal state_reg, state_next : state_type;
 signal up_signal, down_signal : std_logic;
 signal paddle_y_next, paddle_y_reg : unsigned(10 downto 0);
@@ -156,8 +157,11 @@ process(clk, reset)
 					state_next <= top_wall;
 				end if;
 				if (ball_x_reg >= standard_width and ball_x_reg <= standard_width + (1/2)*standard_width+1) then
-					if (ball_y_reg >= paddle_y_reg and ball_y_reg <= paddle_y_reg + paddle_size) then
-						state_next <= paddle_bounce;
+					if (ball_y_reg >= (paddle_y_reg + paddle_size/2)
+							 and ball_y_reg <= (paddle_y_reg + paddle_size)) then
+						state_next <= paddle_bounce_lower;
+					elsif (ball_y_reg >= paddle_y_reg and ball_y_reg < (paddle_y_reg + paddle_size/2)) then
+						state_next <= paddle_bounce_upper;
 					end if;
 				end if;
 			when right_wall =>	
@@ -168,7 +172,9 @@ process(clk, reset)
 				state_next <= movement;
 			when top_wall =>
 				state_next <= movement;
-			when paddle_bounce =>
+			when paddle_bounce_upper =>
+				state_next <= movement;
+			when paddle_bounce_lower =>
 				state_next <= movement;
 		end case;
 		
@@ -207,8 +213,12 @@ process(clk, reset)
 				y_dir <= '1';
 			when top_wall =>
 				y_dir <= '0';
-			when paddle_bounce =>
+			when paddle_bounce_upper =>
 				x_dir <= '0';
+				y_dir <= '1';
+			when paddle_bounce_lower =>
+				x_dir <= '0';
+				y_dir <= '0';
 		end case;
 	end if;
 	
@@ -230,11 +240,13 @@ begin
 end process;
 	
 --paddle movement
-process (up_signal, down_signal, paddle_y_next, paddle_y_reg)
+process (up_signal, down_signal, paddle_y_reg)
 begin
 	paddle_y_next <= paddle_y_reg;
 	
-	if (up_signal = '1' and  down_signal = '0' and paddle_y_next > 5) then
+	if (paddle_y_next < 0) then
+		paddle_y_next <= (others => '0');
+	elsif (up_signal = '1' and  down_signal = '0' and paddle_y_next > 6) then
 		paddle_y_next <= paddle_y_reg - to_unsigned(5, 11);	
 	elsif (up_signal = '0' and down_signal = '1' and paddle_y_next < 479-paddle_size) then
 		paddle_y_next <= paddle_y_reg + 5;
