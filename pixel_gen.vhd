@@ -54,6 +54,15 @@ begin
 		g <= (others => '0');
 		b <= (others => '0');
 		
+--		ball
+		if (row >= ball_y and row <= ball_y + 2) then
+			if (column >= ball_x and column <= ball_x + 2) then
+				r <= (others => '1');
+				g <= (others => '0');
+				b <= (others => '0');
+			end if;
+		end if;
+		
 --		Left Side of A
 		if (row >= AF_Start_Row and row <= AF_Start_Row + Vertical_Bar_Size) then
 			if (column >= AF_Start_Column and column <= AF_Start_Column + Standard_Width) then
@@ -63,8 +72,10 @@ begin
 			end if;
 		end if;
 		
---		Top of A
-		if (row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) then
+--		Top and Middle of A
+		if ((row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) or 
+		(row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
+			row <= AF_Start_Row + Vertical_Bar_Size/2)) then
 			if (column >= AF_Start_Column and column <= Horizontal_Bar_Size + AF_Start_Column) then
 				r <= (others => '0');
 				g <= (others => '0');
@@ -72,38 +83,22 @@ begin
 			end if;
 		end if;
 		
---		Middle of A
-		if (row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
-			row <= AF_Start_Row + Vertical_Bar_Size/2) then
-			if (column >= AF_Start_Column and column <= Horizontal_Bar_Size + AF_Start_Column) then
-				r <= (others => '0');
-				g <= (others => '0');
-				b <= (others => '1');
-			end if;
-		end if;
-		
---		Right Side of A
+--		Right Side of A and Left Side of F
 		if (row >= AF_Start_Row - Standard_Width and row <= AF_Start_Row + Vertical_Bar_Size) then
-			if (column >= AF_Start_Column + Horizontal_Bar_Size and
-			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width) then
+			if ((column >= AF_Start_Column + Horizontal_Bar_Size and
+			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width) or
+			(column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
+			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*3)) then
 				r <= (others => '0');
 				g <= (others => '0');
 				b <= (others => '1');
 			end if;
 		end if;
-		
---		Vertical bar of F
-	   if (row >= AF_Start_Row - Standard_Width and row <= AF_Start_Row + Vertical_Bar_Size) then
-			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
-			column <= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*3) then
-				r <= (others => '0');
-				g <= (others => '0');
-				b <= (others => '1');
-			end if;
-		end if;
-		
---		Top Bar of F
-		if (row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) then
+
+--		Top Bar of F and Middle Bar of F
+		if ((row <= AF_Start_Row and row >= AF_Start_Row - Standard_Width) or 
+		(row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
+			row <= AF_Start_Row + Vertical_Bar_Size/2)) then
 			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
 			column <= AF_Start_Column + Horizontal_Bar_Size*2 + Standard_Width*2) then
 				r <= (others => '0');
@@ -112,25 +107,16 @@ begin
 			end if;
 		end if;
 
---		Middle Bar of F
-		if (row >= AF_Start_Row + Vertical_Bar_Size/2 - Standard_Width and
-			row <= AF_Start_Row + Vertical_Bar_Size/2) then
-			if (column >= AF_Start_Column + Horizontal_Bar_Size + Standard_Width*2 and
-			column <= AF_Start_Column + Horizontal_Bar_Size*2 + Standard_Width*2) then
-				r <= (others => '0');
-				g <= (others => '0');
-				b <= (others => '1');
-			end if;
-		end if;
-		
 --		Paddle
-		if (row <= paddle_y and row >= paddle_y - paddle_size) then
-			if (column >= standard_width and column <= standard_width + 1/2*standard_width) then
+		if (row >= paddle_y and row <= paddle_y + paddle_size) then
+			if (column >= standard_width and column <= standard_width + (1/2)*standard_width) then
 				r <= (others => '1');
 				g <= (others => '1');
 				b <= (others => '0');
 			end if;
 		end if;
-	end process;
+
+
+end process;
 
 end pixel_arch;

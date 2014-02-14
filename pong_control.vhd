@@ -64,7 +64,7 @@ signal up_signal, down_signal : std_logic;
 signal paddle_y_next, paddle_y_reg : unsigned(10 downto 0);
 signal counter_reg, counter_next : unsigned(10 downto 0);
 signal ball_x_reg, ball_x_next, ball_y_reg, ball_y_next : unsigned(10 downto 0);
-signal y_dir, x_dir, y_dir_reg, x_dir_reg: std_logic;
+signal y_dir, x_dir, y_dir_reg, x_dir_reg, stop, stop_reg: std_logic;
 begin
 
 inst_up_pressed: button_pressed
@@ -115,11 +115,13 @@ process(clk, reset)
 			ball_y_reg <= to_unsigned(ball_y_init, 11);
 			x_dir_reg <= '0';
 			y_dir_reg <= '0';
+			stop_reg	 <= '0';
 		elsif (rising_edge(clk)) then
 			ball_x_reg <= ball_x_next;
 			ball_y_reg <= ball_y_next;
 			x_dir_reg <= x_dir;
 			y_dir_reg <= y_dir;
+			stop_reg  <= stop;
 		end if;
 	end process;
 	
@@ -169,9 +171,11 @@ process(clk, reset)
 		ball_y_next <= ball_y_reg;
 		x_dir <= x_dir_reg;
 		y_dir <= y_dir_reg;
+		stop <= stop_reg;
 	if (counter_reg >= ball_speed) then
 		case state_next is
 			when movement =>
+			if (stop_reg = '0') then
 				if (x_dir_reg = '0') then
 					ball_x_next <= ball_x_reg + 1;
 				elsif (x_dir_reg = '1') then
@@ -182,10 +186,11 @@ process(clk, reset)
 				elsif (y_dir_reg ='1') then
 					ball_y_next <= ball_y_reg - to_unsigned(1, 11);
 				end if;
+			end if;
 			when right_wall =>
 				x_dir <= '1';
 			when left_wall =>
-				x_dir <= '0';
+				stop <= '1';
 			when bottom_wall =>
 				y_dir <= '1';
 			when top_wall =>
@@ -217,9 +222,9 @@ process (up_signal, down_signal, paddle_y_next, paddle_y_reg)
 begin
 	paddle_y_next <= paddle_y_reg;
 	
-	if (up_signal = '1' and  down_signal = '0' and paddle_y_next > 1) then
+	if (up_signal = '1' and  down_signal = '0' and paddle_y_next > 5) then
 		paddle_y_next <= paddle_y_reg - to_unsigned(5, 11);	
-	elsif (up_signal = '0' and down_signal = '1' and paddle_y_next < 479) then
+	elsif (up_signal = '0' and down_signal = '1' and paddle_y_next < 479-paddle_size) then
 		paddle_y_next <= paddle_y_reg + 5;
 	end if;
 
