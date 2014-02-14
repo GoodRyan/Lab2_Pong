@@ -8,7 +8,10 @@
 --
 
 library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+use IEEE.STD_LOGIC_1164.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+use IEEE.NUMERIC_STD.ALL;
 
 package PONG_CONSTANTS is
 
@@ -20,6 +23,8 @@ package PONG_CONSTANTS is
 --
 -- Declare constants
 --
+	constant vertical_size				: natural := 480;
+	constant horizontal_size			: natural := 639;
 	
 	constant AF_Start_Row				: natural := 175;
 	constant AF_Start_Column			: natural := 200;
@@ -28,9 +33,15 @@ package PONG_CONSTANTS is
 	constant Horizontal_Bar_Size		: natural := 100;
 	constant Standard_Width				: natural := 20;
 	
-	constant paddle_increment			: natural := 5;
+	constant paddle_increment			: natural := 2;
+	constant paddle_size					: natural := 50;
 	constant paddle_start				: natural := 200;
-	constant paddle_bits					: natural := 11;
+	constant paddle_bit_size			: natural := 11;
+	
+	constant ball_x_init					: natural := 100;
+	constant ball_y_init					: natural := 200;
+	
+	constant ball_speed					: natural := 1000;
 
 -- constant <constant_name>		: integer := <value;
 --
