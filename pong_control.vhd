@@ -35,14 +35,15 @@ use work.PONG_CONSTANTS.all;
 
 entity pong_control is
 	port (
-          clk         : in std_logic;
-          reset       : in std_logic;
-          up          : in std_logic;
-          down        : in std_logic;
-          v_completed : in std_logic;
-          ball_x      : out unsigned(10 downto 0);
-          ball_y      : out unsigned(10 downto 0);
-          paddle_y    : out unsigned(10 downto 0)
+          clk          : in std_logic;
+          reset        : in std_logic;
+          up           : in std_logic;
+          down         : in std_logic;
+			 speed_switch : in std_logic;
+          v_completed  : in std_logic;
+          ball_x       : out unsigned(10 downto 0);
+          ball_y       : out unsigned(10 downto 0);
+          paddle_y     : out unsigned(10 downto 0)
   );
 end pong_control;
 
@@ -65,6 +66,7 @@ signal paddle_y_next, paddle_y_reg : unsigned(10 downto 0);
 signal counter_reg, counter_next : unsigned(10 downto 0);
 signal ball_x_reg, ball_x_next, ball_y_reg, ball_y_next : unsigned(10 downto 0);
 signal y_dir, x_dir, y_dir_reg, x_dir_reg, stop, stop_reg: std_logic;
+signal ball_speed : natural;
 begin
 
 inst_up_pressed: button_pressed
@@ -83,6 +85,16 @@ inst_down_pressed: button_pressed
 		button_out => down_signal
 	);
 	
+--speed check
+process (speed_switch, clk)
+begin
+if (speed_switch = '1') then
+	ball_speed <= 500;
+else
+	ball_speed <= 1000;
+end if;
+end process;
+
 --ball counter
 	counter_next <= counter_reg + 1 when counter_reg < to_unsigned(ball_speed, 11) and v_completed = '1' else
 					    (others => '0') when counter_reg >= to_unsigned(ball_speed, 11) else

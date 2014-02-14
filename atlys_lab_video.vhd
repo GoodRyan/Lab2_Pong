@@ -10,6 +10,7 @@ entity atlys_lab_video is
              reset : in std_logic;
 				 up : in std_logic;
 				 down : in std_logic;
+				 speed_switch: in std_logic;
              tmds : out std_logic_vector(3 downto 0);
              tmdsb : out std_logic_vector(3 downto 0)
     );
@@ -44,14 +45,15 @@ end component;
 
 component pong_control
 	port (
-		clk         : in std_logic;
-      reset       : in std_logic;
-      up          : in std_logic;
-      down        : in std_logic;
-      v_completed : in std_logic;
-      ball_x      : out unsigned(10 downto 0);
-      ball_y      : out unsigned(10 downto 0);
-      paddle_y    : out unsigned(10 downto 0)
+		clk          : in std_logic;
+      reset        : in std_logic;
+		speed_switch : in std_logic;
+      up           : in std_logic;
+      down         : in std_logic;
+      v_completed  : in std_logic;
+      ball_x       : out unsigned(10 downto 0);
+      ball_y       : out unsigned(10 downto 0);
+      paddle_y     : out unsigned(10 downto 0)
 	);
 end component;
 
@@ -118,14 +120,15 @@ inst_pixel_gen: pixel_gen
 
 inst_pong_control: pong_control
 	port map(
-		clk         => pixel_clk,
-      reset       => reset,
-      up          => up,
-      down        => down,
-      v_completed => v_completed_sig,
-      ball_x      => ball_x_sig,
-      ball_y      => ball_y_sig,
-      paddle_y    => paddle_y_sig
+		clk          => pixel_clk,
+      reset        => reset,
+      up           => up,
+      down         => down,
+		speed_switch => speed_switch,
+      v_completed  => v_completed_sig,
+      ball_x       => ball_x_sig,
+      ball_y       => ball_y_sig,
+      paddle_y     => paddle_y_sig
 );
 
 
