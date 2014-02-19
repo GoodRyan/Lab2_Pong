@@ -25,5 +25,18 @@ Below is a drawing of the state machine used in the button pressed entity.
 Test/Debug
 ==========
 
+* The first portion of this lab that required testing and debugging was the paddle.
+  * After writing my paddle code in the pong control entity, I quickly realized the that paddle was not behaving at all as it should. The lead me to create a seperate entity to handle button presses, allowing me to better understand the problem.
+  * When this was complete, the paddle was behaving much the same as it had before. I wrote a test bench to try and track down the problem, but found that the paddle responded to button presses exactly as it should. This lead me to believe that the problem was related to debouncing.
+  * After adding in debouncing functionality, i found the problem had made itself worse as the paddle was virtually non-responsive.
+  * Looking over my code again, I realized that I had forgot to include the counter that allows for debouncing in the process sensitivities for my next-state logic. I had created an inferred latch!
+  * After fixing my sensitivity list, and adjusting other sensitivity lists due to realizing I had created other inferred latches, the paddle worked as it should.
+
+* The next portion of the lab that needed to be tested and debugged was the ball movement.
+  * Once again, in this portion of the lab I made an inferred latch error. I forgot to include the ball_x location register in the sensitivity list for my next state logic. 
+  * After I fixed this issue and got the right wall bounce working, the other wall bounces were fairly simple to implement. Little debugging was necessary for this portion of the lab.
+
 Conclusion
 ==========
+
+  This lab taught me a great deal about abstraction, and using it to simplify a problem. Without using abstraction, the problem of moving the paddle was much more complex. After implementing a design that used the abstraction to simplify the issue, the code became much easier to write. I also learned more about how the UCF file works, and how inputs can be named anything I desire them to be. This lab also reinforced the importance of avoiding inferred latches, and debouncing inputs. The only thing I would recommend adding to the lab, is a hint that the student use a seperate entity to handle button presses.
