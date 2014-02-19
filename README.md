@@ -19,6 +19,7 @@ The final portion of the project was the ball logic. The ball logic was placed i
 
 Below is a drawing of the state machine used in the button pressed entity.
 
+![alt tag](button_pressed_state_machine.PNG)
 
 
 Test/Debug
