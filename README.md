@@ -21,6 +21,48 @@ Below is a drawing of the state machine used in the button pressed entity.
 
 ![alt tag](button_pressed_state_machine.PNG)
 
+Below is code creating the next state logic of the button pressed entity.
+
+```VHDL
+process(button_in, count)
+begin
+	state_next <= state_reg;
+	
+	case state_reg is
+		when idle =>
+			if (button_in = '1') then
+				state_next <= debounce;
+			end if;
+		
+		when debounce =>
+			if (count > 50000 and button_in = '0') then
+				state_next <= output;
+			end if;
+		
+		when output =>
+			state_next <= idle;
+				
+	end case;
+end process;
+
+```
+
+Below is code creating the output logic of the button pressed entity.
+
+```VHDL
+process(state_reg)
+begin
+	case state_reg is
+		when idle =>
+			button_out_next <= '0';
+		when debounce =>
+			button_out_next <= '0';
+		when output =>
+			button_out_next <= '1';
+	end case;
+end process;
+```
+
 
 Test/Debug
 ==========
